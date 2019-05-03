@@ -11,6 +11,11 @@ import (
 	"os"
 )
 
+func decrypt(data []byte, passphrase string) []byte {
+	key := []byte(createHash(passphrase))
+	block, err := aes.NewCipher(key)
+}
+
 func createHash(key string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(key))
