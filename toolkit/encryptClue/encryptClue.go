@@ -51,7 +51,7 @@ func decrypt(data []byte, passphrase string) []byte {
 
 func main() {
 	fmt.Println("Starting the application...")
-	ciphertext := encrypt([]byte("Hello World"), "password")
+	ciphertext := encrypt([]byte("Hello Clarice"), "password")
 	fmt.Printf("Encrypted: %v\n", ciphertext)
 	plaintext := decrypt(ciphertext, "password")
 	fmt.Printf("Decrypted: %s\n", plaintext)
