@@ -7,6 +7,8 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"os"
 )
 
 func createHash(key string) []byte {
@@ -49,10 +51,23 @@ func decrypt(data []byte, passphrase string) []byte {
 	return plaintext
 }
 
+func encryptFile(filename string, data []byte, passphrase string) {
+	f, _ := os.Create(filename)
+	defer f.Close()
+	f.Write(encrypt(data, passphrase))
+}
+
+func decryptFile(filename string, passphrase string) []byte {
+	data, _ := ioutil.ReadFile(filename)
+	return decrypt(data, passphrase)
+}
+
 func main() {
 	fmt.Println("Starting the application...")
 	ciphertext := encrypt([]byte("Hello World"), "password")
 	fmt.Printf("Encrypted: %v\n", ciphertext)
-	plaintext := decrypt(ciphertext, "password")
+	plaintext := decrypt(ciphertext, "passwor1")
 	fmt.Printf("Decrypted: %s\n", plaintext)
+	encryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", []byte("Hello World"), "password")
+	fmt.Println(string(decryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", "password")))
 }
