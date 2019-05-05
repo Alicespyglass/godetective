@@ -1,26 +1,19 @@
 package main
 
 import (
+	"GODETECTIVE/toolkit/createHash"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"crypto/sha256"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 )
 
-func createHash(key string) []byte {
-	hasher := sha256.New()
-	hasher.Write([]byte(key))
-	fmt.Printf("v hash.Sum base16: %x\n", hasher.Sum(nil))
-	return hasher.Sum(nil)
-}
-
 func encrypt(data []byte, passphrase string) []byte {
 	// create an AES block cipher with hashed passphrase
-	key := []byte(createHash(passphrase))
+	key := []byte(createHash.Hash256(passphrase))
 	block, _ := aes.NewCipher(key)
 
 	// wrap block in Galois Counter Mode
@@ -45,7 +38,7 @@ func encrypt(data []byte, passphrase string) []byte {
 
 func decrypt(data []byte, passphrase string) []byte {
 	// create an AES block cipher with hashed passphrase
-	key := []byte(createHash(passphrase))
+	key := []byte(createHash.Hash256(passphrase))
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err.Error())
@@ -85,7 +78,7 @@ func main() {
 	fmt.Println("Starting the application...")
 	ciphertext := encrypt([]byte("Hello World"), "password")
 	fmt.Printf("Encrypted: %v\n", ciphertext)
-	plaintext := decrypt(ciphertext, "passwor1")
+	plaintext := decrypt(ciphertext, "password")
 	fmt.Printf("Decrypted: %s\n", plaintext)
 	encryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", []byte("Hello World"), "password")
 	fmt.Println(string(decryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", "password")))
