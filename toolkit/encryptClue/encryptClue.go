@@ -2,12 +2,12 @@ package main
 
 import (
 	"GODETECTIVE/toolkit/createHash"
+	"GODETECTIVE/toolkit/decryptClue"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 )
 
@@ -36,50 +36,18 @@ func encrypt(data []byte, passphrase string) []byte {
 	return ciphertext
 }
 
-func decrypt(data []byte, passphrase string) []byte {
-	// create an AES block cipher with hashed passphrase
-	key := []byte(createHash.Hash256(passphrase))
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// wrap block in Galois Counter Mode
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// create a nonce of length specified by GCM.
-	// remember we'd prefixed the nonce with the data. Now separate from ciphertext
-	nonceSize := gcm.NonceSize()
-	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-
-	// decrypt data with Open and return as plaintext
-	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-	return plaintext
-}
-
 func encryptFile(filename string, data []byte, passphrase string) {
 	f, _ := os.Create(filename)
 	defer f.Close()
 	f.Write(encrypt(data, passphrase))
 }
 
-func decryptFile(filename string, passphrase string) []byte {
-	data, _ := ioutil.ReadFile(filename)
-	return decrypt(data, passphrase)
-}
-
 func main() {
 	fmt.Println("Starting the application...")
 	ciphertext := encrypt([]byte("Hello World"), "password")
 	fmt.Printf("Encrypted: %v\n", ciphertext)
-	plaintext := decrypt(ciphertext, "password")
+	plaintext := decryptClue.Decrypt(ciphertext, "password")
 	fmt.Printf("Decrypted: %s\n", plaintext)
 	encryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", []byte("Hello World"), "password")
-	fmt.Println(string(decryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", "password")))
+	fmt.Println(string(decryptClue.DecryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", "password")))
 }
