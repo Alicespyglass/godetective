@@ -1,4 +1,4 @@
-package decryptClue
+package main
 
 import (
 	"GODETECTIVE/toolkit/createHash"
@@ -6,9 +6,10 @@ import (
 	"crypto/cipher"
 	"fmt"
 	"io/ioutil"
+	"os"
 )
 
-func Decrypt(data []byte, passphrase string) []byte {
+func decrypt(data []byte, passphrase string) []byte {
 	// 1. Create a cryptographic hash with the passphrase
 	key := []byte(createHash.Hash256(passphrase))
 	fmt.Printf("1. hash key: %x\n", key)
@@ -38,11 +39,22 @@ func Decrypt(data []byte, passphrase string) []byte {
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("5. plaintext: %x\n", plaintext)
+	fmt.Printf("5. plaintext: \n%s\n", plaintext)
 	return plaintext
 }
 
-func DecryptFile(filename string, passphrase string) []byte {
-	data, _ := ioutil.ReadFile(filename)
-	return Decrypt(data, passphrase)
+func decryptFile(filename string, passphrase string) []byte {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Couldn't read file. Err: %v", err)
+	}
+	fmt.Printf("Encrypted data: \n%s\n", data)
+	return decrypt(data, passphrase)
+}
+
+func main() {
+	fmt.Println("Starting decryption...")
+	filename := os.Args[1]
+	passphrase := os.Args[2]
+	decryptFile(filename, passphrase)
 }
