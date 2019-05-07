@@ -2,7 +2,6 @@ package main
 
 import (
 	"GODETECTIVE/toolkit/createHash"
-	"GODETECTIVE/toolkit/decryptClue"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -12,27 +11,34 @@ import (
 )
 
 func encrypt(data []byte, passphrase string) []byte {
-	// create an AES block cipher with hashed passphrase
+	// 1. Create a cryptographic hash with the passphrase
 	key := []byte(createHash.Hash256(passphrase))
-	block, _ := aes.NewCipher(key)
+	fmt.Printf("1. hash key: %x\n", key)
 
-	// wrap block in Galois Counter Mode
+	// 2. Create an AES block cipher with the hash
+	block, _ := aes.NewCipher(key)
+	fmt.Printf("2. aes cipher block: %x\n", block)
+
+	// 3. Wrap block in Galois Counter Mode
 	gcm, err := cipher.NewGCM(block)
+	fmt.Printf("3. gcm: %v\n", gcm)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	// create a nonce of length specified by GCM
+	// 4. create a nonce of length specified by GCM
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
 		panic(err.Error())
 	}
+	fmt.Printf("4. nonce: %v\n", nonce)
 
-	// Seal creates authenticated cipherText using a nonce and cipher block (data)
-	// nonce used for decryption must be the same as one used in encryption
-	// first paramter in Seal is a prefix value which encrypted data is appended to. We prepend nonce here
-	// last paramter is for any additional data such as headers
+	// 5. Seal creates authenticated cipherText using a nonce and cipher block (data).
+	// Nonce used for decryption must be the same as one used in encryption.
+	// First paramter in Seal is a prefix value which encrypted data is appended to. We prepend nonce here.
+	// Last paramter is for any additional data such as headers.
 	ciphertext := gcm.Seal(nonce, nonce, data, nil)
+	fmt.Printf("5. ciphertext: %x\n", ciphertext)
 	return ciphertext
 }
 
@@ -46,8 +52,4 @@ func main() {
 	fmt.Println("Starting the application...")
 	ciphertext := encrypt([]byte("Hello World"), "password")
 	fmt.Printf("Encrypted: %v\n", ciphertext)
-	plaintext := decryptClue.Decrypt(ciphertext, "password")
-	fmt.Printf("Decrypted: %s\n", plaintext)
-	encryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", []byte("Hello World"), "password")
-	fmt.Println(string(decryptClue.DecryptFile("incriminatingEvidenceAgainstRichAndPowerfulPeople.txt", "password")))
 }
