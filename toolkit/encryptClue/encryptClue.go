@@ -3,17 +3,17 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/md5"
 	"crypto/rand"
-	"encoding/hex"
+	"crypto/sha256"
 	"fmt"
 	"io"
 )
 
-func createHash(key string) string {
-	hasher := md5.New()
+func createHash(key string) []byte {
+	hasher := sha256.New()
 	hasher.Write([]byte(key))
-	return hex.EncodeToString(hasher.Sum(nil))
+	fmt.Printf("v hash.Sum base16: %x\n", hasher.Sum(nil))
+	return hasher.Sum(nil)
 }
 
 func encrypt(data []byte, passphrase string) []byte {
