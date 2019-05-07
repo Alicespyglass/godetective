@@ -50,6 +50,7 @@ func encryptFile(filename string, data []byte, passphrase string) {
 
 func main() {
 	fmt.Println("Starting the application...")
+
 	ciphertext := encrypt([]byte("Hello World"), "password")
 	fmt.Printf("Encrypted: %v\n", ciphertext)
 }
