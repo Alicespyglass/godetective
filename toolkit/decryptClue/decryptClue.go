@@ -1,23 +1,25 @@
 package main
 
 import (
-	"GODETECTIVE/toolkit/createHash"
 	"crypto/aes"
 	"crypto/cipher"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	// Phil: use full github name for packages so they're go-gettable
+	"github.com/alicespyglass/godetective/toolkit/createhash"
 )
 
 func decrypt(data []byte, passphrase string) []byte {
 	// 1. Create a cryptographic hash with the passphrase
-	key := []byte(createHash.Hash256(passphrase))
+	key := createhash.Hash256(passphrase)
 	fmt.Printf("1. hash key: %x\n", key)
 
 	// 2. Create an AES block cipher with the hash
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	fmt.Printf("2. aes cipher block: %x\n", block)
 
@@ -25,7 +27,7 @@ func decrypt(data []byte, passphrase string) []byte {
 	gcm, err := cipher.NewGCM(block)
 	fmt.Printf("3. gcm: %v\n", gcm)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 
 	// 4. Remember we'd prefixed the nonce with the data. Now separate from ciphertext
@@ -37,7 +39,7 @@ func decrypt(data []byte, passphrase string) []byte {
 	// 5. Decrypt data to plaintext with Open and the nonce and ciphertext
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	fmt.Printf("5. plaintext: \n%s\n", plaintext)
 	return plaintext
@@ -48,7 +50,8 @@ func decryptFile(filename string, passphrase string) []byte {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Couldn't read file. Err: %v", err)
 	}
-	fmt.Printf("Encrypted data: \n%s\n", data)
+	// Phil: %x to match what you have showing the data on the encrypt side
+	fmt.Printf("Encrypted data: \n%x\n", data)
 	return decrypt(data, passphrase)
 }
 

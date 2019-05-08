@@ -1,4 +1,4 @@
-package createHash
+package createhash
 
 import (
 	"crypto/sha256"
