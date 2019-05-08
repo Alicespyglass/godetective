@@ -15,3 +15,5 @@ https://github.com/telecoda/inktober-2016
 
 [x] Galois/Counter Mode of Operation
 
+### Game
+Use the packages to decode the txt file in the evidence folder.
