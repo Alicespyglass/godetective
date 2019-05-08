@@ -8,29 +8,32 @@ import (
 	"io"
 	"os"
 
-	"github.com/alicespyglass/godetective/toolkit/createHash"
+	"github.com/alicespyglass/godetective/toolkit/createhash"
 )
 
 func encrypt(data []byte, passphrase string) []byte {
 	// 1. Create a cryptographic hash with the passphrase
-	key := []byte(createHash.Hash256(passphrase))
+	key := createhash.Hash256(passphrase)
 	fmt.Printf("1. hash key: %x\n", key)
 
 	// 2. Create an AES block cipher with the hash
-	block, _ := aes.NewCipher(key)
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Printf("2. aes cipher block: %x\n", block)
 
 	// 3. Wrap block in Galois Counter Mode
 	gcm, err := cipher.NewGCM(block)
 	fmt.Printf("3. gcm: %v\n", gcm)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 
 	// 4. create a nonce of length specified by GCM
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	fmt.Printf("4. nonce: %v\n", nonce)
 
