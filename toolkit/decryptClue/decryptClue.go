@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 
-	// Phil: use full github name for packages so they're go-gettable
 	"github.com/alicespyglass/godetective/toolkit/createhash"
 )
 
@@ -50,7 +49,7 @@ func decryptFile(filename string, passphrase string) []byte {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Couldn't read file. Err: %v", err)
 	}
-	// Phil: %x to match what you have showing the data on the encrypt side
+
 	fmt.Printf("Encrypted data: \n%x\n", data)
 	return decrypt(data, passphrase)
 }
