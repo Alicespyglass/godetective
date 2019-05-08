@@ -39,7 +39,7 @@ func encrypt(data []byte, passphrase string) []byte {
 	// First paramter in Seal is a prefix value which encrypted data is appended to. We prepend nonce here.
 	// Last paramter is for any additional data such as headers.
 	ciphertext := gcm.Seal(nonce, nonce, data, nil)
-	fmt.Printf("5. ciphertext: %x\n", ciphertext)
+	fmt.Printf("5. Encrypted ciphertext: %x\n", ciphertext)
 	return ciphertext
 }
 
@@ -51,7 +51,9 @@ func encryptFile(filename string, data []byte, passphrase string) {
 
 func main() {
 	fmt.Println("Starting the application...")
+	data := "Hello World"
+	passphrase := "password"
+	fmt.Printf("Encrypting Data: %s, Passphrase: %s", data, passphrase)
 
-	ciphertext := encrypt([]byte("Hello World"), "password")
-	fmt.Printf("Encrypted: %v\n", ciphertext)
+	encrypt([]byte(data), passphrase)
 }
