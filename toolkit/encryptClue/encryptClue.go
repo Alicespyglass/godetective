@@ -1,13 +1,14 @@
 package main
 
 import (
-	"GODETECTIVE/toolkit/createHash"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/alicespyglass/godetective/toolkit/createHash"
 )
 
 func encrypt(data []byte, passphrase string) []byte {
