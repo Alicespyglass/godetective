@@ -8,18 +8,15 @@ import (
 	"io"
 	"os"
 
-	// Phil: package names are normally lower-case
 	"github.com/alicespyglass/godetective/toolkit/createhash"
 )
 
 func encrypt(data []byte, passphrase string) []byte {
 	// 1. Create a cryptographic hash with the passphrase
-	// Phil: don't need []byte() here as Hash256 already returns a []byte
 	key := createhash.Hash256(passphrase)
 	fmt.Printf("1. hash key: %x\n", key)
 
 	// 2. Create an AES block cipher with the hash
-	// Phil: always check errors!
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err)
@@ -30,7 +27,6 @@ func encrypt(data []byte, passphrase string) []byte {
 	gcm, err := cipher.NewGCM(block)
 	fmt.Printf("3. gcm: %v\n", gcm)
 	if err != nil {
-		// Phil: no need to .Error() here
 		panic(err)
 	}
 
@@ -62,6 +58,5 @@ func main() {
 	passphrase := "password"
 	fmt.Printf("Encrypting Data: %s, Passphrase: %s", data, passphrase)
 
-	// Phil: note you're not using encryptFile here?
 	encrypt([]byte(data), passphrase)
 }
